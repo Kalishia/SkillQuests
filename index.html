@@ -225,11 +225,6 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 .notif.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media(max-width:500px){.chapters{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}.q-text{font-size:18px}.hero-title{font-size:36px}}
-
-@keyframes popFloat {
-  0%,100%{transform:translateY(0);opacity:1}
-  50%{transform:translateY(-15px);opacity:0.7}
-}
 </style>
 </head>
 <body>
@@ -250,20 +245,12 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 <div class="screen" id="screen-landing" style="position:relative;overflow:hidden">
   <!-- PIXEL ART CANVAS BG -->
   <canvas id="pixel-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:block"></canvas>
-  <img src="pink.gif" style="position:absolute;bottom:6%;left:3%;height:160px;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 0 20px rgba(99,102,241,0.8))" />
-  <img src="dude.gif" style="position:absolute;bottom:6%;left:50%;transform:translateX(-50%);height:140px;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 0 16px rgba(245,158,11,0.7));opacity:0.9" />
-  <img src="owlet.gif" style="position:absolute;bottom:6%;right:3%;height:160px;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 0 20px rgba(16,185,129,0.8))" />
-  <div id="pop-left"  style="position:absolute;bottom:30%;left:1%;font-family:monospace;font-weight:800;font-size:22px;color:#ffd700;text-shadow:0 0 14px #ffd700;z-index:3;animation:popFloat 3s ease-in-out infinite"></div>
-  <div id="pop-mid"   style="position:absolute;bottom:28%;left:50%;transform:translateX(-50%);font-family:monospace;font-weight:800;font-size:22px;color:#fb923c;text-shadow:0 0 14px #fb923c;z-index:3;animation:popFloat 2.5s ease-in-out infinite 0.5s"></div>
-  <div id="pop-right" style="position:absolute;bottom:30%;right:1%;font-family:monospace;font-weight:800;font-size:22px;color:#ff69b4;text-shadow:0 0 14px #ff69b4;z-index:3;animation:popFloat 3.5s ease-in-out infinite 1s"></div>
-  <!-- Sprite characters -->
-  
-  
-  
-  <!-- Pop labels above sprites -->
-  
-  
-  
+  <!-- Animated pixel characters -->
+  <img src="pink.gif" style="position:absolute;bottom:5%;left:3%;height:170px;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 0 20px rgba(99,102,241,0.8))" />
+  <img src="owlet.gif" style="position:absolute;bottom:5%;right:3%;height:170px;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 0 20px rgba(16,185,129,0.8))" />
+  <!-- Pop labels -->
+  <div id="pop-left"  style="position:absolute;bottom:33%;left:1%;font-family:monospace;font-weight:800;font-size:22px;color:#ffd700;text-shadow:0 0 14px #ffd700;z-index:3;animation:popFloat 3s ease-in-out infinite"></div>
+  <div id="pop-right" style="position:absolute;bottom:33%;right:1%;font-family:monospace;font-weight:800;font-size:22px;color:#ff69b4;text-shadow:0 0 14px #ff69b4;z-index:3;animation:popFloat 3.5s ease-in-out infinite 1s"></div>
 
   <!-- CONTENT over canvas -->
   <div class="landing-hero" style="position:relative;z-index:1;background:none">
@@ -673,82 +660,147 @@ const CHAPTERS = [
     },
     exercises:{
       en:[{type:'drag',tag:'Steps',title:'PC running slow — what to do?',desc:'Put the diagnostic steps in the correct order:',items:['Open Task Manager','Identify heavy process','Close unnecessary apps','Restart if needed'],correct:['Open Task Manager','Identify heavy process','Close unnecessary apps','Restart if needed'],hint:'Ctrl+Alt+Del → Task Manager → identify → close → restart'}],
-      fr:[{type:'drag',tag:'Ordre',title:'PC lent — que faire ?',desc:'Remets les étapes dans le bon ordre :',items:['Ouvrir le Gestionnaire des tâches','Identifier le processus gourmand','Fermer les programmes inutiles','Redémarrer si nécessaire'],correct:['Ouvrir le Gestionnaire des tâches','Identifier le processus gourmand','Fermer les programmes inutiles','Redémarfunction initPixelCanvas(){
-  const cv=document.getElementById('pixel-canvas');
-  if(!cv||cv._started) return;
-  cv._started=true;
-  const ctx=cv.getContext('2d');
-  let W=window.innerWidth, H=window.innerHeight, fr=0, lastPop=0;
-  cv.width=W; cv.height=H;
-  window.addEventListener('resize',()=>{ W=window.innerWidth; H=window.innerHeight; cv.width=W; cv.height=H; });
+      fr:[{type:'drag',tag:'Ordre',title:'PC lent — que faire ?',desc:'Remets les étapes dans le bon ordre :',items:['Ouvrir le Gestionnaire des tâches','Identifier le processus gourmand','Fermer les programmes inutiles','Redémarrer si nécessaire'],correct:['Ouvrir le Gestionnaire des tâches','Identifier le processus gourmand','Fermer les programmes inutiles','Redémarrer si nécessaire'],hint:'Ctrl+Alt+Del → Gestionnaire → identifier → fermer → redémarrer'}]
+    }
+  },
+];
 
-  // Floaters
-  const texts=['=SUMIF()','=VLOOKUP()','=IF(A>0)','=AVERAGE()','=COUNTIF()','=INDEX()','=MATCH()','=TODAY()','=IFERROR()','=MAX()','=MIN()','=LEN()','=TRIM()','Ctrl+C','Ctrl+V','Ctrl+Z','Ctrl+S','Ctrl+B','Ctrl+F','Win+L','Win+E','Alt+F4','F5','F2','F4','=NB.SI()','=RECHERCHEV()','=SI()','=SOMME.SI()','Ctrl+D','Alt+Tab','Win+Shift+S','=CONCAT()','=UNIQUE()','Ctrl+H','Ctrl+A','Win+→'];
-  const cols=['#ff6b6b','#ffd700','#00e5ff','#ff69b4','#98fb98','#c084fc','#fb923c','#4ade80','#f472b6','#38bdf8','#a3e635','#facc15'];
-  const floaters=[];
-  for(let i=0;i<55;i++) floaters.push({
-    x:Math.random()*1600,y:Math.random()*900,
-    text:texts[Math.floor(Math.random()*texts.length)],
-    col:cols[Math.floor(Math.random()*cols.length)],
-    speed:0.5+Math.random()*1.2,
-    size:Math.random()<0.35?16:Math.random()<0.65?12:9,
-    op:0.7+Math.random()*0.3,
-    wave:Math.random()*Math.PI*2,
-    drift:(Math.random()-0.5)*0.5
-  });
+const BADGES = [
+  {id:'first_quiz', icon:'⭐', label:{en:'First question',fr:'Première question'}, cond:u=>u.quizDone>=1},
+  {id:'excel_master', icon:'📊', label:{en:'Excel Expert',fr:'Expert Excel'}, cond:u=>u.completed&&u.completed.includes('excel-shortcuts')&&u.completed.includes('excel-formulas')},
+  {id:'speedrun', icon:'⚡', label:{en:'Speed Run',fr:'Speed Run'}, cond:u=>u.fastAnswers>=3},
+  {id:'perfect', icon:'🎯', label:{en:'Flawless',fr:'Sans faute'}, cond:u=>u.perfectQuiz>=1},
+  {id:'all_done', icon:'🏆', label:{en:'SkillMaster',fr:'SkillMaster'}, cond:u=>u.completed&&u.completed.length>=7},
+  {id:'streak', icon:'🔥', label:{en:'On Fire',fr:'En feu'}, cond:u=>u.quizDone>=10},
+];
 
-  const stars=[];
-  for(let i=0;i<120;i++) stars.push({x:Math.random()*1600,y:Math.random()*900,r:Math.random()*1.8+0.3,b:Math.random()*Math.PI*2,s:0.012+Math.random()*0.03});
+const LEVELS_EN = ['Apprentice','Explorer','Technician','Expert','SkillMaster'];
+const LEVELS_FR = ['Apprenti','Explorateur','Technicien','Expert','SkillMaster'];
+const LEVEL_THRESHOLDS = [0,100,250,500,900];
 
-  // Pop labels cycling
-  const popLeft=['+50 XP !','LEVEL UP !','NICE !','Ctrl+D !'];
-  const popMid=['COMBO !','GG !','+100 XP !','⭐'];
-  const popRight=['+25 XP !','PERFECT !','🎯','Win+L !'];
-  let popIdx=0;
-  setInterval(()=>{
-    popIdx++;
-    const l=document.getElementById('pop-left');
-    const m=document.getElementById('pop-mid');
-    const r=document.getElementById('pop-right');
-    if(l) l.textContent=popLeft[popIdx%popLeft.length];
-    if(m) m.textContent=popMid[popIdx%popMid.length];
-    if(r) r.textContent=popRight[popIdx%popRight.length];
-  },2200);
-  // Init first text
-  setTimeout(()=>{
-    const l=document.getElementById('pop-left');
-    const m=document.getElementById('pop-mid');
-    const r=document.getElementById('pop-right');
-    if(l) l.textContent=popLeft[0];
-    if(m) m.textContent=popMid[0];
-    if(r) r.textContent=popRight[0];
-  },500);
+function getLevelIdx(pts){ let i=0; LEVEL_THRESHOLDS.forEach((th,idx)=>{if(pts>=th)i=idx;}); return i; }
+function getLevelName(pts){ const idx=getLevelIdx(pts); return LANG==='en'?LEVELS_EN[idx]:LEVELS_FR[idx]; }
+function getLevelMax(pts){ return LEVEL_THRESHOLDS[getLevelIdx(pts)+1]||Infinity; }
+function getLevelMin(pts){ return LEVEL_THRESHOLDS[getLevelIdx(pts)]; }
 
-  function loop(){
-    fr++;
-    const g=ctx.createLinearGradient(0,0,W,H);
-    g.addColorStop(0,'#030014');g.addColorStop(0.5,'#0d0525');g.addColorStop(1,'#010009');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle='rgba(120,60,255,0.055)';ctx.lineWidth=1;
-    for(let x=0;x<W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    stars.forEach(s=>{
-      s.b+=s.s;
-      ctx.beginPath();ctx.arc(s.x%W,s.y%H,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(255,255,255,${0.2+0.65*Math.abs(Math.sin(s.b))})`;ctx.fill();
-    });
-    floaters.forEach((f,i)=>{
-      f.y-=f.speed;f.x+=f.drift+Math.sin(fr*0.007+f.wave)*0.4;
-      if(f.y<-30){f.y=H+15;f.x=Math.random()*W;}
-      if(f.x<-90)f.x=W+10;if(f.x>W+90)f.x=-90;
-      ctx.globalAlpha=f.op*(0.6+0.35*Math.sin(fr*0.013+i*0.5));
-      ctx.fillStyle=f.col;ctx.font=`bold ${f.size}px monospace`;
-      ctx.fillText(f.text,f.x,f.y);ctx.globalAlpha=1;
-    });
-    setTimeout(()=>requestAnimationFrame(loop),35);
+// ── STATE ─────────────────────────────────────────────
+let currentUID=null, currentUserData=null, timerInterval=null;
+let quizState={}, dragging=null;
+
+async function loadUserData(uid){ const snap=await getDoc(doc(db,'users',uid)); return snap.exists()?snap.data():null; }
+async function saveUserData(uid,data){ await setDoc(doc(db,'users',uid),data,{merge:true}); }
+async function saveProgress(){ if(currentUID&&!currentUID.startsWith('guest_')) await saveUserData(currentUID,currentUserData); }
+
+// ── STARS ─────────────────────────────────────────────
+function createStars(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<100;i++){
+    const s=document.createElement('div'); s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:${Math.random()*5}s;--op:${0.2+Math.random()*.8}`;
+    c.appendChild(s);
   }
-  loop();
-}/ ${max===Infinity?'∞':max} XP`;
+}
+
+// ── SCREENS ───────────────────────────────────────────
+window.showScreen = function(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const sc=document.getElementById('screen-'+id);
+  sc.style.display='flex'; sc.classList.add('active');
+  if(id==='landing') setTimeout(initPixelCanvas, 50);
+};
+window.showHome=function(){ window.showScreen('home'); renderHome(); };
+window.showProfile=function(){ window.showScreen('profile'); renderProfile(); };
+window.showLeaderboard=function(){ window.showScreen('leaderboard'); renderLeaderboard(); };
+
+// ── UTILS ─────────────────────────────────────────────
+function notify(msg){
+  const n=document.getElementById('notif'); n.textContent=msg; n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),3500);
+}
+function confetti(){
+  const colors=['#6366f1','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4','#ec4899'];
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div'); p.className='confetti-piece';
+    p.style.cssText=`left:${15+Math.random()*70}%;top:20%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*.5}s;animation-duration:${.9+Math.random()*.7}s`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),1600);
+  }
+}
+
+// ── AUTH ──────────────────────────────────────────────
+window.switchAuthTab=function(tab,btn){
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('auth-register').style.display=tab==='register'?'block':'none';
+  document.getElementById('auth-error').style.display='none';
+  document.getElementById('auth-success').style.display='none';
+};
+function authError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.style.display='block';}
+function authSuccess(msg){const el=document.getElementById('auth-success');el.textContent=msg;el.style.display='block';}
+
+window.doLogin=async function(){
+  document.getElementById('auth-error').style.display='none';
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email||!pass){return authError(LANG==='en'?'Fill in all fields.':'Remplis tous les champs.');}
+  try{ await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){ authError(LANG==='en'?'Incorrect email or password.':'Email ou mot de passe incorrect.'); }
+};
+
+window.doRegister=async function(){
+  document.getElementById('auth-error').style.display='none';
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  if(!name||!email||!pass){return authError(LANG==='en'?'Fill in all fields.':'Remplis tous les champs.');}
+  if(pass.length<6){return authError(LANG==='en'?'Password: minimum 6 characters.':'Mot de passe : minimum 6 caractères.');}
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await updateProfile(cred.user,{displayName:name});
+    await saveUserData(cred.user.uid,{name,email,pts:0,quizDone:0,fastAnswers:0,perfectQuiz:0,completed:[],history:[],badges:[],chapProgress:{}});
+    authSuccess(LANG==='en'?'Account created! Signing in…':'Compte créé ! Connexion en cours…');
+  }catch(e){
+    if(e.code==='auth/email-already-in-use') authError(LANG==='en'?'This email is already used.':'Cet email est déjà utilisé.');
+    else authError(e.message);
+  }
+};
+
+window.doGuest=function(){
+  currentUID='guest_'+Date.now();
+  currentUserData={name:'Guest',pts:0,quizDone:0,fastAnswers:0,perfectQuiz:0,completed:[],history:[],badges:[],chapProgress:{}};
+  window.showHome();
+  notify(t('guest_warn'));
+};
+
+window.doLogout=async function(){
+  if(currentUID&&!currentUID.startsWith('guest_')) await signOut(auth);
+  currentUID=null; currentUserData=null; window.showScreen('landing');
+};
+
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    currentUID=user.uid;
+    let data=await loadUserData(user.uid);
+    if(!data){ data={name:user.displayName||user.email.split('@')[0],email:user.email,pts:0,quizDone:0,fastAnswers:0,perfectQuiz:0,completed:[],history:[],badges:[],chapProgress:{}}; await saveUserData(user.uid,data); }
+    currentUserData=data;
+    window.showHome();
+  } else { if(!currentUID) window.showScreen('landing'); }
+});
+setTimeout(()=>{ if(!currentUID) window.showScreen('landing'); },800);
+
+// ── HOME ──────────────────────────────────────────────
+function renderHome(){
+  const u=currentUserData; if(!u) return;
+  document.getElementById('nav-pts').textContent=u.pts+' XP';
+  document.getElementById('nav-pts2').textContent=u.pts+' XP';
+  document.getElementById('nav-avatar').textContent=(u.name||'?')[0].toUpperCase();
+  document.getElementById('home-name').textContent=u.name||'Player';
+
+  const lv=getLevelName(u.pts||0); const idx=getLevelIdx(u.pts||0)+1;
+  const max=getLevelMax(u.pts||0); const min=getLevelMin(u.pts||0);
+  const pct=Math.min(100,max===Infinity?100:Math.round(((u.pts-min)/(max-min))*100));
+  document.getElementById('xp-level-label').textContent=LANG==='en'?`Level ${idx} — ${lv}`:`Niveau ${idx} — ${lv}`;
+  document.getElementById('xp-counter').textContent=`${u.pts} / ${max===Infinity?'∞':max} XP`;
   document.getElementById('xp-fill').style.width=pct+'%';
 
   // Update lang buttons
@@ -1031,74 +1083,6 @@ function initPixelCanvas(){
   if(!cv||cv._started) return;
   cv._started=true;
   const ctx=cv.getContext('2d');
-  let W=window.innerWidth, H=window.innerHeight, fr=0, lastPop=0;
-
-  cv.width=W; cv.height=H;
-  cv.style.width=W+'px'; cv.style.height=H+'px';
-  window.addEventListener('resize',()=>{
-    W=window.innerWidth; H=window.innerHeight;
-    cv.width=W; cv.height=H;
-  });
-
-  // ── PIXEL PERSON (pre-rendered on offscreen canvas) ──────────────
-  const S=10; // pixel block size
-
-  function makePersonCanvas(skin,shirt,hair,excited,armFrame){
-    const oc=document.createElement('canvas');
-    oc.width=S*10; oc.height=S*12;
-    const c=oc.getContext('2d');
-    function p(x,y,col){c.fillStyle=col;c.fillRect(x*S,y*S,S,S);}
-    // hair
-    [1,2,3,4].forEach(x=>p(x,0,hair));
-    p(0,1,hair);
-    // head
-    [0,1,2,3,4,5].forEach(x=>{p(x,1,skin);p(x,2,skin);});
-    p(1,1,'#111');p(4,1,'#111'); // eyes
-    p(1,2,'#aa4422');p(4,2,'#aa4422'); // mouth
-    // body
-    [0,1,2,3,4,5].forEach(x=>{p(x,3,shirt);p(x,4,shirt);p(x,5,shirt);});
-    // pants
-    [1,2,3,4].forEach(x=>p(x,6,'#223366'));
-    // shoes
-    [1,2,3,4].forEach(x=>p(x,7,'#111'));
-    // arms
-    if(!excited){
-      const t=armFrame<12;
-      p(-1+8,3,skin);p(6+1,3,skin); // offset to fit canvas
-      // simplified arms
-      c.fillStyle=skin;
-      c.fillRect(0,3*S,S,S); c.fillRect(6*S,3*S,S,S);
-      if(t){c.fillRect(0,4*S,S,S);c.fillRect(6*S,4*S,S,S);}
-      else {c.fillRect(0*S,5*S,S,S);c.fillRect(6*S,5*S,S,S);}
-    } else {
-      c.fillStyle=skin;
-      const t=armFrame<15;
-      c.fillRect(0,t?1*S:2*S,S,S*2);
-      c.fillRect(6*S,t?1*S:2*S,S,S*2);
-    }
-    return oc;
-  }
-
-  // Pre-render frames for 2 persons
-  const FRAMES=24;
-  const person1Frames=[], person2Frames=[];
-  for(let f=0;f<FRAMES;f++){
-    person1Frames.push(makePersonCanvas('#FDBCB4','#6366f1','#3b1f0a',false,f%24));
-    person2Frames.push(makePersonCanvas('#C68642','#10b981','#2c1a0e',true,f%28));
-  }
-
-  // ── FLOATERS ─────────────────────────────────────────────────────
-  const texts=['=SUMIF()','=VLOOKUP()','=IF(A1>0)','=AVERAGE()','=COUNTIF()','=INDEX()','=MATCH()','=TODAY()','=IFERROR()','=MAX()','=MIN()','=LEN()','=TRIM()','Ctrl+C','Ctrl+V','Ctrl+Z','Ctrl+S','Ctrl+B','Ctrl+F','Win+L','Win+E','Alt+F4','F5','F2','F4','=NB.SI()','=RECHERCHEV()','=SI()','Win+Shift+S','Alt+Tab','=SOMME.SI()','Ctrl+D','=CONCAT()','XP','LVL','IF'];
-  const cols=['#ff6b6b','#ffd700','#00e5ff','#ff69b4','#98fb98','#c084fc','#fb923c','#4ade80','#f472b6','#38bdf8','#a3e635','#facc15'];
-
-  const floaters=[];
-  for(let i=0;i<40;i++) floaters.push({
-    x:Math.random()*1600, y:Math.random()*900,
-    text:texts[Math.floor(Math.random()*texts.function initPixelCanvas(){
-  const cv=document.getElementById('pixel-canvas');
-  if(!cv||cv._started) return;
-  cv._started=true;
-  const ctx=cv.getContext('2d');
   let W=window.innerWidth, H=window.innerHeight, fr=0;
   cv.width=W; cv.height=H;
   window.addEventListener('resize',()=>{ W=window.innerWidth; H=window.innerHeight; cv.width=W; cv.height=H; });
@@ -1116,21 +1100,19 @@ function initPixelCanvas(){
   const stars=[];
   for(let i=0;i<120;i++) stars.push({x:Math.random()*1600,y:Math.random()*900,r:Math.random()*1.8+0.3,b:Math.random()*Math.PI*2,s:0.012+Math.random()*0.03});
 
-  const popLeft=['+50 XP !','LEVEL UP !','NICE !','Ctrl+D !'];
-  const popMid=['COMBO !','GG !','+100 XP !','⭐'];
-  const popRight=['+25 XP !','PERFECT !','🎯','Win+L !'];
-  let popIdx=0;
+  // Pop labels cycling
+  const popsL=['+50 XP !','LEVEL UP !','NICE !','Ctrl+D !','⭐ GG !'];
+  const popsR=['+25 XP !','COMBO !','🎯 PERFECT !','Win+L !','🔥 HOT !'];
+  let pi=0;
   function updatePops(){
     const l=document.getElementById('pop-left');
-    const m=document.getElementById('pop-mid');
     const r=document.getElementById('pop-right');
-    if(l)l.textContent=popLeft[popIdx%popLeft.length];
-    if(m)m.textContent=popMid[popIdx%popMid.length];
-    if(r)r.textContent=popRight[popIdx%popRight.length];
-    popIdx++;
+    if(l)l.textContent=popsL[pi%popsL.length];
+    if(r)r.textContent=popsR[pi%popsR.length];
+    pi++;
   }
   updatePops();
-  setInterval(updatePops,2200);
+  setInterval(updatePops,2500);
 
   function loop(){
     fr++;
@@ -1154,41 +1136,6 @@ function initPixelCanvas(){
       ctx.fillText(f.text,f.x,f.y);ctx.globalAlpha=1;
     });
     setTimeout(()=>requestAnimationFrame(loop),35);
-  }
-  loop();
-}+8,8,24); ctx.fillRect(p1x+47,p1y+8,8,24);
-    // monitor left
-    ctx.fillStyle='#0d0d2b'; ctx.fillRect(p1x-20,p1y-55,40,36);
-    ctx.fillStyle=fr%40<20?'#00ddff':'#00aacc'; ctx.fillRect(p1x-16,p1y-51,32,24);
-    ctx.fillStyle='#555'; ctx.fillRect(p1x-4,p1y-19,8,9);
-
-    // Draw desk right
-    ctx.fillStyle='#5C3317';
-    ctx.fillRect(p2x-55,p2y-10,110,10);
-    ctx.fillStyle='#4a2910';
-    ctx.fillRect(p2x-55,p2y,110,8);
-    ctx.fillStyle='#6B4226';
-    ctx.fillRect(p2x-55,p2y+8,8,24); ctx.fillRect(p2x+47,p2y+8,8,24);
-    // monitor right
-    ctx.fillStyle='#0d0d2b'; ctx.fillRect(p2x-20,p2y-55,40,36);
-    ctx.fillStyle=fr%40<20?'#ff69b4':'#cc4488'; ctx.fillRect(p2x-16,p2y-51,32,24);
-    ctx.fillStyle='#555'; ctx.fillRect(p2x-4,p2y-19,8,9);
-
-    // Draw persons using pre-rendered canvases
-    const pw=person1Frames[fIdx].width;
-    const ph=person1Frames[fIdx].height;
-    ctx.drawImage(person1Frames[fIdx], p1x-pw/2, p1y-ph-10);
-    ctx.drawImage(person2Frames[fr%FRAMES], p2x-pw/2, p2y-ph-10);
-
-    // Tips above persons
-    const tip1=['=SUMIF?','Ctrl+D!','Win+L?'][Math.floor(fr/70)%3];
-    const tip2=['+50 XP!','LEVEL UP!','GG!'][Math.floor(fr/80)%3];
-    ctx.globalAlpha=0.95; ctx.font='bold 12px monospace';
-    ctx.fillStyle='#ffd700'; ctx.fillText(tip1, p1x-28, p1y-ph-30);
-    ctx.fillStyle='#ff69b4'; ctx.fillText(tip2, p2x-28, p2y-ph-30);
-    ctx.globalAlpha=1;
-
-    setTimeout(()=>requestAnimationFrame(loop), 40);
   }
   loop();
 }
