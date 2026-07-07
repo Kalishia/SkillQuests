@@ -1078,199 +1078,213 @@ function initPixelCanvas(){
   cv._started=true;
   const ctx=cv.getContext('2d');
   let W=window.innerWidth, H=window.innerHeight, fr=0, lastPop=0;
-
   cv.width=W; cv.height=H;
-  cv.style.width=W+'px'; cv.style.height=H+'px';
-  window.addEventListener('resize',()=>{
-    W=window.innerWidth; H=window.innerHeight;
-    cv.width=W; cv.height=H;
-  });
+  window.addEventListener('resize',()=>{ W=window.innerWidth; H=window.innerHeight; cv.width=W; cv.height=H; });
 
-  // ── PIXEL PERSON (pre-rendered on offscreen canvas) ──────────────
-  const S=10; // pixel block size
+  const S=9; // pixel size
 
-  function makePersonCanvas(skin,shirt,hair,excited,armFrame){
+  // Pre-render person on offscreen canvas
+  function makePerson(skin,shirt,hair,pants,excited,armT){
     const oc=document.createElement('canvas');
-    oc.width=S*10; oc.height=S*12;
+    oc.width=S*9; oc.height=S*10;
     const c=oc.getContext('2d');
     function p(x,y,col){c.fillStyle=col;c.fillRect(x*S,y*S,S,S);}
     // hair
-    [1,2,3,4].forEach(x=>p(x,0,hair));
-    p(0,1,hair);
+    [1,2,3,4].forEach(x=>p(x,0,hair)); p(0,1,hair);
     // head
     [0,1,2,3,4,5].forEach(x=>{p(x,1,skin);p(x,2,skin);});
-    p(1,1,'#111');p(4,1,'#111'); // eyes
-    p(1,2,'#aa4422');p(4,2,'#aa4422'); // mouth
+    p(1,1,'#111');p(4,1,'#111');
+    p(1,2,'#993322');p(4,2,'#993322');
     // body
-    [0,1,2,3,4,5].forEach(x=>{p(x,3,shirt);p(x,4,shirt);p(x,5,shirt);});
-    // pants
-    [1,2,3,4].forEach(x=>p(x,6,'#223366'));
-    // shoes
-    [1,2,3,4].forEach(x=>p(x,7,'#111'));
-    // arms
+    [0,1,2,3,4,5].forEach(x=>{p(x,3,shirt);p(x,4,shirt);});
+    // sitting - legs forward
+    [0,1,2,3,4,5].forEach(x=>p(x,5,pants));
+    p(0,6,pants);p(5,6,pants);
+    p(0,7,'#222');p(5,7,'#222');
+    // arms animate
     if(!excited){
-      const t=armFrame<12;
-      p(-1+8,3,skin);p(6+1,3,skin); // offset to fit canvas
-      // simplified arms
       c.fillStyle=skin;
-      c.fillRect(0,3*S,S,S); c.fillRect(6*S,3*S,S,S);
-      if(t){c.fillRect(0,4*S,S,S);c.fillRect(6*S,4*S,S,S);}
-      else {c.fillRect(0*S,5*S,S,S);c.fillRect(6*S,5*S,S,S);}
+      // left arm
+      c.fillRect(-S,3*S,S,S);
+      c.fillRect(armT?-S:-S*2,4*S,S,S);
+      // right arm
+      c.fillRect(6*S,3*S,S,S);
+      c.fillRect(armT?6*S:7*S,4*S,S,S);
     } else {
       c.fillStyle=skin;
-      const t=armFrame<15;
-      c.fillRect(0,t?1*S:2*S,S,S*2);
-      c.fillRect(6*S,t?1*S:2*S,S,S*2);
+      c.fillRect(-S,armT?1*S:2*S,S,S*2);
+      c.fillRect(6*S,armT?1*S:2*S,S,S*2);
     }
     return oc;
   }
 
-  // Pre-render frames for 2 persons
-  const FRAMES=24;
-  const person1Frames=[], person2Frames=[];
-  for(let f=0;f<FRAMES;f++){
-    person1Frames.push(makePersonCanvas('#FDBCB4','#6366f1','#3b1f0a',false,f%24));
-    person2Frames.push(makePersonCanvas('#C68642','#10b981','#2c1a0e',true,f%28));
+  // Pre-render desk
+  function makeDesk(wood,screenCol){
+    const dw=S*14, dh=S*6;
+    const oc=document.createElement('canvas');
+    oc.width=dw; oc.height=dh;
+    const c=oc.getContext('2d');
+    function p(x,y,col){c.fillStyle=col;c.fillRect(x*S,y*S,S,S);}
+    // desktop
+    for(let x=0;x<14;x++){p(x,2,wood);p(x,3,'#5C3317');}
+    // legs
+    [0,13].forEach(lx=>{p(lx,4,wood);p(lx,5,wood);});
+    // monitor
+    for(let x=4;x<=10;x++){p(x,0,'#0d0d2b');}
+    for(let x=4;x<=10;x++){c.fillStyle=screenCol;c.fillRect(x*S,S,S,S);}
+    for(let x=4;x<=10;x++){p(x,0,'#0d0d2b');}
+    // screen border
+    p(4,0,'#0d0d2b');p(10,0,'#0d0d2b');
+    // stand
+    p(7,2,'#555');
+    // keyboard
+    [2,3,4,5,6].forEach(x=>{c.fillStyle=x%2===0?'#777':'#999';c.fillRect(x*S,2*S,S,Math.round(S*0.6));});
+    return oc;
   }
 
-  // ── FLOATERS ─────────────────────────────────────────────────────
-  const texts=['=SUMIF()','=VLOOKUP()','=IF(A1>0)','=AVERAGE()','=COUNTIF()','=INDEX()','=MATCH()','=TODAY()','=IFERROR()','=MAX()','=MIN()','=LEN()','=TRIM()','Ctrl+C','Ctrl+V','Ctrl+Z','Ctrl+S','Ctrl+B','Ctrl+F','Win+L','Win+E','Alt+F4','F5','F2','F4','=NB.SI()','=RECHERCHEV()','=SI()','Win+Shift+S','Alt+Tab','=SOMME.SI()','Ctrl+D','=CONCAT()','XP','LVL','IF'];
+  // Prerender all frames
+  const FRAMES=24;
+  const p1frames=[], p2frames=[];
+  for(let f=0;f<FRAMES;f++){
+    p1frames.push(makePerson('#FDBCB4','#6366f1','#3b1f0a','#223366',false,f%24<12));
+    p2frames.push(makePerson('#C68642','#10b981','#2c1a0e','#334455',true,f%28<14));
+  }
+  const desk1=makeDesk('#8B4513','#00ddff');
+  const desk2=makeDesk('#5C3317','#ff69b4');
+
+  // Floaters
+  const texts=['=SUMIF()','=VLOOKUP()','=IF(A>0)','=AVERAGE()','=COUNTIF()','=INDEX()','=MATCH()','=TODAY()','=IFERROR()','=MAX()','=MIN()','=LEN()','=TRIM()','Ctrl+C','Ctrl+V','Ctrl+Z','Ctrl+S','Ctrl+B','Ctrl+F','Win+L','Win+E','Alt+F4','F5','F2','F4','Ctrl+;','=NB.SI()','=RECHERCHEV()','=SI()','=SOMME.SI()','Ctrl+D','XP','LVL','IF','Alt+Tab','Win+Shift+S','=CONCAT()','=UNIQUE()','=SORT()'];
   const cols=['#ff6b6b','#ffd700','#00e5ff','#ff69b4','#98fb98','#c084fc','#fb923c','#4ade80','#f472b6','#38bdf8','#a3e635','#facc15'];
 
   const floaters=[];
-  for(let i=0;i<40;i++) floaters.push({
+  for(let i=0;i<55;i++) floaters.push({
     x:Math.random()*1600, y:Math.random()*900,
     text:texts[Math.floor(Math.random()*texts.length)],
     col:cols[Math.floor(Math.random()*cols.length)],
-    speed:0.4+Math.random()*1.0,
-    size:Math.random()<0.4?15:Math.random()<0.7?12:9,
+    speed:0.5+Math.random()*1.2,
+    size:Math.random()<0.35?16:Math.random()<0.65?12:9,
     op:0.7+Math.random()*0.3,
     wave:Math.random()*Math.PI*2,
-    drift:(Math.random()-0.5)*0.4
+    drift:(Math.random()-0.5)*0.5
   });
 
-  // ── STARS ────────────────────────────────────────────────────────
+  // Stars
   const stars=[];
-  for(let i=0;i<100;i++) stars.push({
+  for(let i=0;i<120;i++) stars.push({
     x:Math.random()*1600, y:Math.random()*900,
     r:Math.random()*1.8+0.3,
     b:Math.random()*Math.PI*2,
-    s:0.015+Math.random()*0.03
+    s:0.012+Math.random()*0.03
   });
 
-  // ── POPS ─────────────────────────────────────────────────────────
+  // Pops
   const pops=[];
-  const popTexts=['+10 XP','+25 XP','+50 XP','NICE!','GG!','⭐','🎯','COMBO!'];
-  const person1X=()=>W*0.1;
-  const person2X=()=>W*0.9;
-  const personY=()=>H*0.82;
-
+  const popTexts=['+10 XP','+25 XP','+50 XP','NICE!','GG!','⭐','🎯','COMBO!','+100 XP','WOW!'];
   function spawnPop(){
     const onLeft=Math.random()<0.5;
+    const px=onLeft?W*0.1:W*0.9;
+    const py=H*0.78;
     pops.push({
-      x:(onLeft?person1X():person2X())-20+Math.random()*40,
-      y:personY()-100,
+      x:px-25+Math.random()*50, y:py-80,
       text:popTexts[Math.floor(Math.random()*popTexts.length)],
       col:cols[Math.floor(Math.random()*cols.length)],
-      vy:-(1.5+Math.random()*1.5), life:1
+      vy:-(1.8+Math.random()*1.8), life:1
     });
   }
 
-  // ── LOOP ─────────────────────────────────────────────────────────
   function loop(){
     fr++;
 
     // BG
     const g=ctx.createLinearGradient(0,0,W,H);
-    g.addColorStop(0,'#030014'); g.addColorStop(0.5,'#0d0525'); g.addColorStop(1,'#010009');
+    g.addColorStop(0,'#030014');g.addColorStop(0.5,'#0d0525');g.addColorStop(1,'#010009');
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
 
     // Grid
-    ctx.strokeStyle='rgba(120,60,255,0.05)'; ctx.lineWidth=1;
-    for(let x=0;x<W;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=0;y<H;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.strokeStyle='rgba(120,60,255,0.055)'; ctx.lineWidth=1;
+    for(let x=0;x<W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
     // Stars
     stars.forEach(s=>{
       s.b+=s.s;
-      ctx.beginPath(); ctx.arc(s.x%W, s.y%H, s.r, 0, Math.PI*2);
-      ctx.fillStyle=`rgba(255,255,255,${0.2+0.6*Math.abs(Math.sin(s.b))})`; ctx.fill();
+      ctx.beginPath(); ctx.arc(s.x%W,s.y%H,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${0.2+0.65*Math.abs(Math.sin(s.b))})`; ctx.fill();
     });
 
     // Floaters
     floaters.forEach((f,i)=>{
-      f.y-=f.speed; f.x+=f.drift+Math.sin(fr*0.007+f.wave)*0.3;
-      if(f.y<-30){f.y=H+15; f.x=Math.random()*W;}
-      if(f.x<-80)f.x=W; if(f.x>W+80)f.x=0;
-      ctx.globalAlpha=f.op*(0.6+0.35*Math.sin(fr*0.012+i*0.5));
+      f.y-=f.speed; f.x+=f.drift+Math.sin(fr*0.007+f.wave)*0.4;
+      if(f.y<-30){f.y=H+15;f.x=Math.random()*W;}
+      if(f.x<-90)f.x=W+10; if(f.x>W+90)f.x=-90;
+      ctx.globalAlpha=f.op*(0.6+0.35*Math.sin(fr*0.013+i*0.5));
       ctx.fillStyle=f.col; ctx.font=`bold ${f.size}px monospace`;
       ctx.fillText(f.text,f.x,f.y); ctx.globalAlpha=1;
     });
 
-    // Pops
-    if(fr-lastPop>45){spawnPop();lastPop=fr;}
+    // Pops XP
+    if(fr-lastPop>42){spawnPop();lastPop=fr;}
     for(let i=pops.length-1;i>=0;i--){
-      const p=pops[i]; p.y+=p.vy; p.vy+=0.05; p.life-=0.02;
+      const p=pops[i]; p.y+=p.vy; p.vy+=0.05; p.life-=0.018;
       if(p.life<=0){pops.splice(i,1);continue;}
       ctx.globalAlpha=p.life; ctx.fillStyle=p.col;
-      ctx.font='bold 14px sans-serif'; ctx.fillText(p.text,p.x,p.y);
+      ctx.font='bold 13px sans-serif'; ctx.fillText(p.text,p.x,p.y);
       ctx.globalAlpha=1;
     }
 
-    // ── PERSONS (pre-rendered, cheap to draw) ──────────────────────
-    const p1x=person1X(), p1y=personY();
-    const p2x=person2X(), p2y=personY();
-    const fIdx=fr%FRAMES;
+    // ── DESK + PERSON LEFT ──────────────────────────────────────
+    const d1x=W*0.08, d1y=H*0.82;
+    const dw=desk1.width, dh=desk1.height;
+    const pw=p1frames[0].width, ph=p1frames[0].height;
 
-    // Glow left
-    const g1=ctx.createRadialGradient(p1x,p1y,5,p1x,p1y,100);
-    g1.addColorStop(0,'rgba(99,102,241,0.2)'); g1.addColorStop(1,'transparent');
-    ctx.fillStyle=g1; ctx.fillRect(p1x-100,p1y-100,200,140);
+    // glow left
+    const gl=ctx.createRadialGradient(d1x,d1y-20,5,d1x,d1y-20,110);
+    gl.addColorStop(0,'rgba(99,102,241,0.22)'); gl.addColorStop(1,'transparent');
+    ctx.fillStyle=gl; ctx.fillRect(d1x-110,d1y-110,220,150);
 
-    // Glow right
-    const g2=ctx.createRadialGradient(p2x,p2y,5,p2x,p2y,100);
-    g2.addColorStop(0,'rgba(16,185,129,0.2)'); g2.addColorStop(1,'transparent');
-    ctx.fillStyle=g2; ctx.fillRect(p2x-100,p2y-100,200,140);
+    // draw desk 1 (person sits ON desk - draw person first, then desk top)
+    // person sitting position: centered on desk, legs hanging over edge
+    const p1drawX=d1x-pw/2;
+    const p1drawY=d1y-dh-ph+S*3; // S*3 = legs hang into desk
+    ctx.drawImage(p1frames[fr%FRAMES], p1drawX, p1drawY);
+    ctx.drawImage(desk1, d1x-dw/2, d1y-dh);
 
-    // Draw desk left
-    ctx.fillStyle='#8B4513';
-    ctx.fillRect(p1x-55,p1y-10,110,10);
-    ctx.fillStyle='#5C3317';
-    ctx.fillRect(p1x-55,p1y,110,8);
-    ctx.fillStyle='#6B4226';
-    ctx.fillRect(p1x-55,p1y+8,8,24); ctx.fillRect(p1x+47,p1y+8,8,24);
-    // monitor left
-    ctx.fillStyle='#0d0d2b'; ctx.fillRect(p1x-20,p1y-55,40,36);
-    ctx.fillStyle=fr%40<20?'#00ddff':'#00aacc'; ctx.fillRect(p1x-16,p1y-51,32,24);
-    ctx.fillStyle='#555'; ctx.fillRect(p1x-4,p1y-19,8,9);
+    // monitor screen flicker
+    ctx.fillStyle=fr%40<20?'rgba(0,200,255,0.15)':'transparent';
+    ctx.fillRect(d1x-dw/2+4*S, d1y-dh+S, 7*S, S);
 
-    // Draw desk right
-    ctx.fillStyle='#5C3317';
-    ctx.fillRect(p2x-55,p2y-10,110,10);
-    ctx.fillStyle='#4a2910';
-    ctx.fillRect(p2x-55,p2y,110,8);
-    ctx.fillStyle='#6B4226';
-    ctx.fillRect(p2x-55,p2y+8,8,24); ctx.fillRect(p2x+47,p2y+8,8,24);
-    // monitor right
-    ctx.fillStyle='#0d0d2b'; ctx.fillRect(p2x-20,p2y-55,40,36);
-    ctx.fillStyle=fr%40<20?'#ff69b4':'#cc4488'; ctx.fillRect(p2x-16,p2y-51,32,24);
-    ctx.fillStyle='#555'; ctx.fillRect(p2x-4,p2y-19,8,9);
-
-    // Draw persons using pre-rendered canvases
-    const pw=person1Frames[fIdx].width;
-    const ph=person1Frames[fIdx].height;
-    ctx.drawImage(person1Frames[fIdx], p1x-pw/2, p1y-ph-10);
-    ctx.drawImage(person2Frames[fr%FRAMES], p2x-pw/2, p2y-ph-10);
-
-    // Tips above persons
-    const tip1=['=SUMIF?','Ctrl+D!','Win+L?'][Math.floor(fr/70)%3];
-    const tip2=['+50 XP!','LEVEL UP!','GG!'][Math.floor(fr/80)%3];
-    ctx.globalAlpha=0.95; ctx.font='bold 12px monospace';
-    ctx.fillStyle='#ffd700'; ctx.fillText(tip1, p1x-28, p1y-ph-30);
-    ctx.fillStyle='#ff69b4'; ctx.fillText(tip2, p2x-28, p2y-ph-30);
+    // tips left
+    const tips1=['Ctrl+D!','=SUMIF?','Win+L !','LEVEL UP!'];
+    ctx.globalAlpha=0.95; ctx.fillStyle='#ffd700';
+    ctx.font='bold 12px monospace';
+    ctx.fillText(tips1[Math.floor(fr/70)%tips1.length], d1x-30, p1drawY-15);
     ctx.globalAlpha=1;
 
-    setTimeout(()=>requestAnimationFrame(loop), 40);
+    // ── DESK + PERSON RIGHT ─────────────────────────────────────
+    const d2x=W*0.92, d2y=H*0.82;
+
+    // glow right
+    const gr2=ctx.createRadialGradient(d2x,d2y-20,5,d2x,d2y-20,110);
+    gr2.addColorStop(0,'rgba(16,185,129,0.22)'); gr2.addColorStop(1,'transparent');
+    ctx.fillStyle=gr2; ctx.fillRect(d2x-110,d2y-110,220,150);
+
+    const p2drawX=d2x-pw/2;
+    const p2drawY=d2y-dh-ph+S*3;
+    ctx.drawImage(p2frames[fr%FRAMES], p2drawX, p2drawY);
+    ctx.drawImage(desk2, d2x-dw/2, d2y-dh);
+
+    // monitor screen flicker right
+    ctx.fillStyle=fr%40<20?'rgba(255,100,180,0.15)':'transparent';
+    ctx.fillRect(d2x-dw/2+4*S, d2y-dh+S, 7*S, S);
+
+    // tips right
+    const tips2=['+50 XP!','GG!','COMBO!','NICE!'];
+    ctx.globalAlpha=0.95; ctx.fillStyle='#ff69b4';
+    ctx.font='bold 12px monospace';
+    ctx.fillText(tips2[Math.floor(fr/80)%tips2.length], d2x-25, p2drawY-15);
+    ctx.globalAlpha=1;
+
+    setTimeout(()=>requestAnimationFrame(loop), 35);
   }
   loop();
 }
