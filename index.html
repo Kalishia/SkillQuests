@@ -24,7 +24,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 
 /* SCREENS */
 .screen{display:none;position:relative;z-index:1;min-height:100vh}
-.screen.active{display:flex;flex-direction:column}
+.screen.active{display:flex!important;flex-direction:column}
 
 /* LANG TOGGLE */
 .lang-toggle{position:fixed;top:1rem;right:1rem;z-index:999;display:flex;gap:4px;background:rgba(13,19,33,.8);border:1px solid var(--border);border-radius:20px;padding:4px}
@@ -233,7 +233,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 <div class="notif" id="notif"></div>
 
 <!-- LOADING -->
-<div class="screen active" id="screen-loading">
+<div class="screen" id="screen-loading" style="display:none">
   <div class="loading">
     <div style="font-size:56px;animation:rocket 2s ease-in-out infinite">🚀</div>
     <div class="spinner"></div>
@@ -242,7 +242,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 </div>
 
 <!-- LANDING -->
-<div class="screen" id="screen-landing" style="position:relative;overflow:hidden;min-height:100vh">
+<div class="screen active" id="screen-landing" style="position:relative;overflow:hidden;min-height:100vh">
   <!-- PIXEL ART CANVAS BG -->
   <canvas id="pixel-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:block"></canvas>
 
@@ -715,8 +715,6 @@ window.showScreen = function(id){
   if(sc){sc.style.display='flex'; sc.classList.add('active');}
   if(id==='landing') setTimeout(initPixelCanvas, 80);
 };
-// Force hide loading immediately
-document.getElementById('screen-loading').style.display='none';
 window.showHome=function(){ window.showScreen('home'); renderHome(); };
 window.showProfile=function(){ window.showScreen('profile'); renderProfile(); };
 window.showLeaderboard=function(){ window.showScreen('leaderboard'); renderLeaderboard(); };
@@ -793,9 +791,8 @@ onAuthStateChanged(auth,async user=>{
     if(!data){ data={name:user.displayName||user.email.split('@')[0],email:user.email,pts:0,quizDone:0,fastAnswers:0,perfectQuiz:0,completed:[],history:[],badges:[],chapProgress:{}}; await saveUserData(user.uid,data); }
     currentUserData=data;
     window.showHome();
-  } else { if(!currentUID) window.showScreen('landing'); }
+  } else { currentUID=null; window.showScreen('landing'); }
 });
-setTimeout(()=>{ if(!currentUID) window.showScreen('landing'); },500);
 
 // ── HOME ──────────────────────────────────────────────
 function renderHome(){
