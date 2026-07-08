@@ -225,6 +225,32 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 .notif.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media(max-width:500px){.chapters{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}.q-text{font-size:18px}.hero-title{font-size:36px}}
+@keyframes popFloat{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(-8px);opacity:0.8}}
+
+/* ── LANDING REDESIGN ─────────────────────────────────── */
+.land-topbar{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem}
+.land-logo{display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:17px;color:#fff;letter-spacing:.01em}
+.land-logo .rocket{font-size:20px;animation:rocket 2s ease-in-out infinite;display:inline-block}
+.land-lang{display:flex;gap:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:3px;backdrop-filter:blur(10px)}
+.land-lang button{padding:4px 11px;border:none;border-radius:13px;font-size:11px;font-weight:700;cursor:pointer;transition:.2s;background:none;color:var(--muted2);font-family:inherit}
+.land-lang button.active{background:var(--accent);color:#fff}
+
+.moon-stage{position:relative;width:min(78vw,520px);aspect-ratio:460/460;margin:0 auto}
+#moon-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:2}
+#flag-canvas{position:absolute;width:27%;height:auto;aspect-ratio:130/150;left:34.8%;top:30.6%;transform:translate(-50%,-100%);z-index:4;pointer-events:none}
+.moon-char{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:2px;z-index:5}
+.moon-char img{height:clamp(52px,13vw,88px);width:auto;image-rendering:pixelated;display:block}
+.moon-char .pop{font-family:monospace;font-weight:800;font-size:clamp(10px,2.4vw,13px);white-space:nowrap;animation:popFloat 3s ease-in-out infinite}
+
+.land-dock-wrap{position:relative;z-index:10;display:flex;justify-content:center;padding:0 1rem;margin-top:auto}
+.land-dock{width:100%;max-width:560px;background:rgba(10,8,24,.72);border:1px solid rgba(148,130,255,.25);border-radius:22px;padding:14px 20px 16px;backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.02) inset;margin-bottom:clamp(14px,3vh,28px)}
+.land-tagline{text-align:center;color:#b8c0f0;font-size:11.5px;font-family:monospace;letter-spacing:.03em;margin-bottom:10px;opacity:.85}
+.land-stats{display:flex;justify-content:center;gap:22px;margin-bottom:12px}
+.land-stat{text-align:center}
+.land-stat .n{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:800;background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.land-stat .l{font-size:8.5px;color:#8b93c9;letter-spacing:.09em;font-weight:700;margin-top:1px}
+.land-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media(max-width:420px){.land-stats{gap:14px}.land-tagline{display:none}}
 </style>
 </head>
 <body>
@@ -242,44 +268,59 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
 </div>
 
 <!-- LANDING -->
-<div class="screen" id="screen-landing" style="position:relative;overflow:hidden">
-  <!-- PIXEL ART CANVAS BG -->
+<div class="screen" id="screen-landing" style="position:relative;overflow:hidden;min-height:100vh;background:#030014">
+  <!-- SPACE CANVAS BG -->
   <canvas id="pixel-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;display:block"></canvas>
-  <!-- Animated pixel characters -->
-  <!-- Pink jumping - left -->
-  <div style="position:absolute;bottom:4%;left:3%;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px">
-    <div id="pop-left" style="font-family:monospace;font-weight:800;font-size:20px;color:#ffd700;text-shadow:0 0 14px #ffd700;animation:popFloat 3s ease-in-out infinite;white-space:nowrap"></div>
-    <img src="pink.gif" style="height:170px;image-rendering:pixelated;filter:drop-shadow(0 0 20px rgba(99,102,241,0.8))" />
-  </div>
-  <!-- Dude idle - center -->
-  <div style="position:absolute;bottom:4%;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px">
-    <div id="pop-mid" style="font-family:monospace;font-weight:800;font-size:20px;color:#fb923c;text-shadow:0 0 14px #fb923c;animation:popFloat 2.5s ease-in-out infinite 0.8s;white-space:nowrap"></div>
-    <img src="dude.gif" style="height:150px;image-rendering:pixelated;filter:drop-shadow(0 0 18px rgba(245,158,11,0.7))" />
-  </div>
-  <!-- Owlet idle - right -->
-  <div style="position:absolute;bottom:4%;right:3%;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px">
-    <div id="pop-right" style="font-family:monospace;font-weight:800;font-size:20px;color:#ff69b4;text-shadow:0 0 14px #ff69b4;animation:popFloat 3.5s ease-in-out infinite 1s;white-space:nowrap"></div>
-    <img src="owlet.gif" style="height:170px;image-rendering:pixelated;filter:drop-shadow(0 0 20px rgba(16,185,129,0.8))" />
-  </div>
 
-  <!-- CONTENT over canvas -->
-  <div class="landing-hero" style="position:relative;z-index:1;background:none">
-    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(48px,9vw,90px);font-weight:800;line-height:1;margin-bottom:1rem;text-shadow:0 0 40px rgba(99,102,241,.5)">
-      🚀 SkillQuest
-    </h1>
-    <p class="hero-sub" style="text-shadow:0 2px 12px rgba(0,0,0,.8)">Learn Excel, Word, Outlook, PowerPoint &amp; Windows<br>through interactive quests, challenges and real rewards.</p>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="num">7</div><div class="lbl">Chapters</div></div>
-      <div class="hero-stat"><div class="num">50+</div><div class="lbl">Questions</div></div>
-      <div class="hero-stat"><div class="num">6</div><div class="lbl">Badges</div></div>
-      <div class="hero-stat"><div class="num">∞</div><div class="lbl">Replays</div></div>
-    </div>
-    <div class="hero-btns">
-      <button class="btn-hero-primary" onclick="showScreen('auth')">Start your quest →</button>
-      <button class="btn-hero-secondary" onclick="doGuest()">Try as guest</button>
+  <!-- TOP BAR -->
+  <div class="land-topbar">
+    <div class="land-logo"><span class="rocket">🚀</span> SkillQuest</div>
+    <div class="land-lang">
+      <button class="active" id="land-lang-en" onclick="setLang('en',this);document.getElementById('land-lang-fr').classList.remove('active')">EN</button>
+      <button id="land-lang-fr" onclick="setLang('fr',this);document.getElementById('land-lang-en').classList.remove('active')">FR</button>
     </div>
   </div>
 
+  <!-- MOON + FLAG + CHARACTERS -->
+  <div style="position:relative;z-index:3;flex:1;display:flex;align-items:center;justify-content:center;padding:0 0 1rem">
+    <div class="moon-stage">
+      <canvas id="moon-canvas" width="460" height="460"></canvas>
+      <canvas id="flag-canvas" width="130" height="150"></canvas>
+
+      <!-- Dude - top of the sphere -->
+      <div class="moon-char" style="left:50%;top:27.2%">
+        <div class="pop" id="pop-dude" style="color:#38bdf8;text-shadow:0 0 8px #38bdf8"></div>
+        <img src="dude.gif" style="filter:drop-shadow(0 0 12px rgba(56,189,248,0.9))" />
+      </div>
+      <!-- Pink - left -->
+      <div class="moon-char" style="left:25%;top:37.3%">
+        <div class="pop" id="pop-left" style="color:#ffd700;text-shadow:0 0 8px #ffd700"></div>
+        <img src="pink.gif" style="filter:drop-shadow(0 0 12px rgba(180,120,255,0.9))" />
+      </div>
+      <!-- Owlet - right -->
+      <div class="moon-char" style="left:75%;top:37.3%">
+        <div class="pop" id="pop-right" style="color:#00e5ff;text-shadow:0 0 8px #00e5ff"></div>
+        <img src="owlet.gif" style="filter:drop-shadow(0 0 12px rgba(100,220,180,0.9))" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating dock -->
+  <div class="land-dock-wrap">
+    <div class="land-dock">
+      <p class="land-tagline">Learn Excel · Word · Outlook · PowerPoint · Windows — interactive quests &amp; real rewards</p>
+      <div class="land-stats">
+        <div class="land-stat"><div class="n">7</div><div class="l">CHAPTERS</div></div>
+        <div class="land-stat"><div class="n">50+</div><div class="l">QUESTIONS</div></div>
+        <div class="land-stat"><div class="n">6</div><div class="l">BADGES</div></div>
+        <div class="land-stat"><div class="n">∞</div><div class="l">REPLAYS</div></div>
+      </div>
+      <div class="land-btns">
+        <button class="btn-hero-primary" onclick="showScreen('auth')" style="padding:.7rem 1.8rem;font-size:13.5px">Start your quest →</button>
+        <button class="btn-hero-secondary" onclick="doGuest()" style="padding:.7rem 1.5rem;font-size:13.5px">Try as guest</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -1093,168 +1134,237 @@ function initPixelCanvas(){
   if(!cv||cv._started) return;
   cv._started=true;
   const ctx=cv.getContext('2d');
-  let W=window.innerWidth, H=window.innerHeight, fr=0;
-  cv.width=W; cv.height=H;
-  window.addEventListener('resize',()=>{ W=window.innerWidth; H=window.innerHeight; cv.width=W; cv.height=H; });
+  let W=window.innerWidth,H=window.innerHeight,fr=0;
+  cv.width=W;cv.height=H;
+  window.addEventListener('resize',()=>{W=window.innerWidth;H=window.innerHeight;cv.width=W;cv.height=H;});
 
-  // Clouds
-  const clouds=[
-    {x:60, y:Math.round(H*0.08), w:140, spd:0.35},
-    {x:320,y:Math.round(H*0.05), w:110, spd:0.22},
-    {x:560,y:Math.round(H*0.10), w:130, spd:0.28},
-    {x:760,y:Math.round(H*0.06), w:100, spd:0.18},
-    {x:160,y:Math.round(H*0.13), w:90,  spd:0.15},
-  ];
+  // ── MOON CANVAS ──────────────────────────────────────
+  const moonCv=document.getElementById('moon-canvas');
+  const mCtx=moonCv?moonCv.getContext('2d'):null;
+  if(mCtx) mCtx.imageSmoothingEnabled=false;
 
-  function drawCloud(cx,cy,cw){
-    const x=((cx%W)+W)%W;
-    ctx.fillStyle='#C8C8DC';
-    for(let i=0;i<cw;i+=8) ctx.fillRect(x+i,cy+18,8,8);
-    ctx.fillStyle='#FFFFFF';
-    for(let i=8;i<cw-8;i+=8) ctx.fillRect(x+i,cy+9,8,9);
-    ctx.fillStyle='#FFFFFF';
-    ctx.fillRect(x+18,cy,28,9); ctx.fillRect(x+52,cy+4,18,5);
-    if(x+cw>W){
-      const ov=x+cw-W;
-      ctx.fillStyle='#C8C8DC';
-      for(let i=0;i<ov;i+=8) ctx.fillRect(i,cy+18,8,8);
-      ctx.fillStyle='#FFFFFF';
-      if(ov>16) for(let i=8;i<Math.min(ov,cw-8);i+=8) ctx.fillRect(i,cy+9,8,9);
+  function drawMoon(){
+    if(!mCtx) return;
+    const MW=moonCv.width,MH=moonCv.height;
+    mCtx.clearRect(0,0,MW,MH);
+    const cx=MW*0.5,cy=MH*0.63,R=MH*0.359; // cx=230 cy=290 R=165 at 460x460
+
+    // Outer atmospheric glow
+    const grd=mCtx.createRadialGradient(cx,cy,R*0.75,cx,cy,R*1.55);
+    grd.addColorStop(0,'rgba(255,250,210,0.18)');
+    grd.addColorStop(1,'transparent');
+    mCtx.fillStyle=grd;
+    mCtx.beginPath();mCtx.arc(cx,cy,R*1.55,0,Math.PI*2);mCtx.fill();
+
+    // Moon body — full round sphere, pixel blocks, shaded like lit from upper-left
+    const BS=10;
+    const lightDX=-0.55,lightDY=-0.65; // light direction
+    const palette=['#fbf6e3','#f0e8d0','#e2d8b8','#cfc4a0','#b7ab8a']; // light -> dark
+    for(let px=-R;px<R;px+=BS){
+      for(let py=-R;py<R;py+=BS){
+        const d2=px*px+py*py;
+        if(d2<R*R){
+          const nx=px/R,ny=py/R;
+          // shading value: how much this pixel faces the light
+          const light=Math.max(0,nx*lightDX+ny*lightDY+0.35);
+          const ci=Math.min(palette.length-1,Math.floor((1-light)*palette.length));
+          mCtx.fillStyle=palette[Math.max(0,ci)];
+          mCtx.fillRect(cx+px,cy+py,BS,BS);
+        }
+      }
     }
+
+    // Craters scattered across the whole disc (pixel circles, shaded rim + floor)
+    function crater(x,y,r){
+      for(let px=-r;px<r;px+=BS){
+        for(let py=-r;py<r;py+=BS){
+          const gx=x+px,gy=y+py;
+          if((gx-cx)*(gx-cx)+(gy-cy)*(gy-cy) >= R*R) continue; // stay on sphere
+          const d2=px*px+py*py;
+          if(d2<r*r){
+            const rim=d2>r*r*0.55;
+            mCtx.fillStyle=rim?'#a89a76':'#c2b593';
+            mCtx.fillRect(gx,gy,BS,BS);
+          }
+        }
+      }
+    }
+    crater(cx-90,cy-60,22);
+    crater(cx-30,cy-95,14);
+    crater(cx+70,cy-40,26);
+    crater(cx+30,cy+20,16);
+    crater(cx-70,cy+40,18);
+    crater(cx+90,cy+60,13);
+    crater(cx-10,cy+90,20);
+    crater(cx+10,cy-10,10);
+    crater(cx-120,cy+10,12);
+
+    // Terminator shading — soft dark crescent on lower-right for depth
+    const term=mCtx.createRadialGradient(cx+R*0.4,cy+R*0.4,0,cx+R*0.4,cy+R*0.4,R*1.1);
+    term.addColorStop(0,'rgba(60,45,30,0.22)');
+    term.addColorStop(1,'transparent');
+    mCtx.save();
+    mCtx.beginPath();mCtx.arc(cx,cy,R,0,Math.PI*2);mCtx.clip();
+    mCtx.fillStyle=term;mCtx.fillRect(cx-R,cy-R,R*2,R*2);
+    mCtx.restore();
+
+    // Crisp rim highlight (top-left) to sell the sphere
+    mCtx.save();
+    mCtx.beginPath();mCtx.arc(cx,cy,R,0,Math.PI*2);mCtx.clip();
+    const rim=mCtx.createRadialGradient(cx-R*0.5,cy-R*0.55,0,cx-R*0.5,cy-R*0.55,R*0.9);
+    rim.addColorStop(0,'rgba(255,255,235,0.25)');
+    rim.addColorStop(1,'transparent');
+    mCtx.fillStyle=rim;mCtx.fillRect(cx-R,cy-R,R*2,R*2);
+    mCtx.restore();
   }
 
-  // Floating formulas
-  const texts=['=SUMIF()','=VLOOKUP()','=IF(A>0)','=AVERAGE()','=COUNTIF()','=INDEX()','=MATCH()','=TODAY()','=IFERROR()','=MAX()','=MIN()','=LEN()','=TRIM()','Ctrl+C','Ctrl+V','Ctrl+Z','Ctrl+S','Ctrl+B','Ctrl+F','Win+L','Win+E','Alt+F4','F5','F2','F4','=NB.SI()','=RECHERCHEV()','=SI()','=SOMME.SI()','Ctrl+D','Alt+Tab','Win+Shift+S','=CONCAT()','=UNIQUE()','Ctrl+H'];
-  const cols=['#1B4D8E','#2D6E3E','#7A3A0A','#5A2070','#1A6A5A','#8A3A20','#1A4A7A','#3A6A10'];
+  // ── FLAG CANVAS ───────────────────────────────────────
+  const flagCv=document.getElementById('flag-canvas');
+  const fCtx=flagCv?flagCv.getContext('2d'):null;
+  if(fCtx) fCtx.imageSmoothingEnabled=false;
+
+  function drawFlag(fr){
+    if(!fCtx) return;
+    const FCW=flagCv.width,FCH=flagCv.height; // 130x150
+    fCtx.clearRect(0,0,FCW,FCH);
+    const PX=FCW*0.46,BS=4,POLE_H=FCH-25,POLE_TOP=FCH-POLE_H-10;
+
+    // Pole (base sits near bottom of canvas — anchors to the moon surface)
+    fCtx.fillStyle='#aaaaaa';
+    fCtx.fillRect(PX,POLE_TOP,BS,POLE_H);
+    fCtx.fillStyle='#cccccc';
+    fCtx.fillRect(PX+1,POLE_TOP,1,POLE_H);
+
+    // Flag wave (small pixel blocks)
+    const FW=80,FH=42,FX=PX+BS,FY=POLE_TOP+2;
+    for(let bx=0;bx<FW/BS;bx++){
+      for(let by=0;by<FH/BS;by++){
+        const wave=Math.round(Math.sin(bx*0.4+fr*0.12)*3*(bx/(FW/BS)));
+        const px=FX+bx*BS, py=FY+by*BS+wave;
+        if(by===0||by===FH/BS-1) fCtx.fillStyle='#f59e0b';
+        else {
+          const sh=Math.sin(bx*0.4+fr*0.12);
+          fCtx.fillStyle=sh>0.2?'#6366f1':sh>-0.2?'#4f46e5':'#4338ca';
+        }
+        fCtx.fillRect(px,py,BS,BS);
+      }
+    }
+
+    // Text on flag
+    fCtx.font='bold 12px monospace';
+    fCtx.textAlign='center';
+    const midWave=Math.round(Math.sin((FW/BS/2)*0.4+fr*0.12)*2);
+    fCtx.fillStyle='rgba(0,0,0,0.6)';
+    fCtx.fillText('Skill',FX+FW*0.28+1,FY+FH/2+midWave+5+1);
+    fCtx.fillText('Quest',FX+FW*0.72+1,FY+FH/2+midWave+5+1);
+    fCtx.fillStyle='#ffffff';
+    fCtx.fillText('Skill',FX+FW*0.28,FY+FH/2+midWave+5);
+    fCtx.fillStyle='#ffd700';
+    fCtx.fillText('Quest',FX+FW*0.72,FY+FH/2+midWave+5);
+  }
+
+  // ── STARS ─────────────────────────────────────────────
+  const stars=[];
+  for(let i=0;i<180;i++) stars.push({
+    x:Math.random()*1600,y:Math.random()*900,
+    r:Math.random()*2+0.3,
+    b:Math.random()*Math.PI*2,
+    s:0.01+Math.random()*0.04,
+    col:Math.random()<0.1?'#ffd700':Math.random()<0.1?'#a5b4fc':'#ffffff'
+  });
+
+  // Shooting stars
+  const shoots=[];
+  function spawnShoot(){
+    shoots.push({x:Math.random()*W,y:Math.random()*H*0.4,vx:4+Math.random()*4,vy:2+Math.random()*3,life:1});
+  }
+  setInterval(spawnShoot,4000);
+
+  // ── FLOATERS ──────────────────────────────────────────
+  const texts=['=SUMIF()','=VLOOKUP()','=IF(A>0)','=AVERAGE()','=COUNTIF()','=INDEX()','=MATCH()','=TODAY()','=IFERROR()','=MAX()','=MIN()','Ctrl+C','Ctrl+V','Ctrl+Z','Ctrl+S','Win+L','Win+E','Alt+F4','F5','F2','=NB.SI()','=RECHERCHEV()','=SI()','Ctrl+D','Alt+Tab','Ctrl+H','=CONCAT()'];
+  const fcols=['#c084fc','#818cf8','#67e8f9','#86efac','#fbbf24','#f472b6','#a5f3fc','#d8b4fe'];
   const floaters=[];
-  for(let i=0;i<40;i++) floaters.push({
-    x:Math.random()*1600, y:Math.random()*900,
+  for(let i=0;i<45;i++) floaters.push({
+    x:Math.random()*1600,y:Math.random()*900,
     text:texts[Math.floor(Math.random()*texts.length)],
-    col:cols[Math.floor(Math.random()*cols.length)],
-    speed:0.4+Math.random()*0.9,
-    size:Math.random()<0.35?15:Math.random()<0.65?12:9,
-    op:0.55+Math.random()*0.3,
+    col:fcols[Math.floor(Math.random()*fcols.length)],
+    speed:0.3+Math.random()*0.8,
+    size:Math.random()<0.35?14:11,
+    op:0.6+Math.random()*0.3,
     wave:Math.random()*Math.PI*2,
     drift:(Math.random()-0.5)*0.4
   });
 
-  // Fireflies
-  const fireflies=[];
-  for(let i=0;i<12;i++) fireflies.push({
-    x:Math.random()*W, y:H*0.55+Math.random()*H*0.25,
-    life:Math.random(), spd:0.008+Math.random()*0.012,
-    vx:(Math.random()-0.5)*0.5, vy:(Math.random()-0.5)*0.3
-  });
-
-  // Pop labels cycling
+  // Pop labels
   const popsL=['+50 XP !','LEVEL UP !','NICE !','⭐ GG !'];
-  const popsM=['COMBO !','🔥 HOT !','+100 XP !','💥 YES !'];
-  const popsR=['+25 XP !','🎯 PERFECT !','Win+L !','BRAVO !'];
+  const popsR=['+25 XP !','🎯 PERFECT !','BRAVO !','⚡ FAST !'];
+  const popsD=['🚀 GO !','+100 XP !','STREAK !','🔥 COMBO !'];
   let pi=0;
   function updatePops(){
     const l=document.getElementById('pop-left');
-    const m=document.getElementById('pop-mid');
     const r=document.getElementById('pop-right');
-    if(l)l.textContent=popsL[pi%popsL.length];
-    if(m)m.textContent=popsM[pi%popsM.length];
-    if(r)r.textContent=popsR[pi%popsR.length];
+    const d=document.getElementById('pop-dude');
+    if(l) l.textContent=popsL[pi%popsL.length];
+    if(r) r.textContent=popsR[pi%popsR.length];
+    if(d) d.textContent=popsD[pi%popsD.length];
     pi++;
   }
-  updatePops(); setInterval(updatePops,2500);
+  updatePops();setInterval(updatePops,2500);
+
+  // Draw moon once
+  drawMoon();
 
   function loop(){
     fr++;
     ctx.clearRect(0,0,W,H);
 
-    // Sky gradient (pixel rows)
-    const skyH=Math.round(H*0.58);
-    const skyTop='#5B8FD4', skyBot='#8BBFF8';
-    for(let y=0;y<skyH;y++){
-      const t=y/skyH;
-      const r=Math.round(parseInt(skyTop.slice(1,3),16)*(1-t)+parseInt(skyBot.slice(1,3),16)*t);
-      const g=Math.round(parseInt(skyTop.slice(3,5),16)*(1-t)+parseInt(skyBot.slice(3,5),16)*t);
-      const b=Math.round(parseInt(skyTop.slice(5,7),16)*(1-t)+parseInt(skyBot.slice(5,7),16)*t);
-      ctx.fillStyle=`rgb(${r},${g},${b})`;
-      ctx.fillRect(0,y,W,1);
-    }
+    // Deep space background
+    const g=ctx.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#020010');g.addColorStop(0.5,'#0a0525');g.addColorStop(1,'#050015');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
 
-    // Clouds drift
-    clouds.forEach(cl=>{
-      cl.x-=cl.spd;
-      if(cl.x+cl.w<0) cl.x=W+20;
-      drawCloud(cl.x,cl.y,cl.w);
+    // Nebula glow (subtle)
+    const n1=ctx.createRadialGradient(W*0.2,H*0.3,0,W*0.2,H*0.3,W*0.35);
+    n1.addColorStop(0,'rgba(99,102,241,0.08)');n1.addColorStop(1,'transparent');
+    ctx.fillStyle=n1;ctx.fillRect(0,0,W,H);
+    const n2=ctx.createRadialGradient(W*0.8,H*0.6,0,W*0.8,H*0.6,W*0.3);
+    n2.addColorStop(0,'rgba(168,85,247,0.06)');n2.addColorStop(1,'transparent');
+    ctx.fillStyle=n2;ctx.fillRect(0,0,W,H);
+
+    // Stars
+    stars.forEach(s=>{
+      s.b+=s.s;
+      const a=0.2+0.7*Math.abs(Math.sin(s.b));
+      ctx.beginPath();ctx.arc(s.x%W,s.y%H,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.col.replace(')',`,${a})`).replace('rgb','rgba').replace('#','rgba(').replace('ffffff',`255,255,255,${a})`);
+      ctx.fillStyle=s.col;
+      ctx.globalAlpha=a;ctx.fill();ctx.globalAlpha=1;
     });
 
-    // Far hills
-    ctx.fillStyle='#4A7A3D';
-    ctx.beginPath(); ctx.moveTo(0,H);
-    for(let x=0;x<=W;x++){
-      const h=Math.round(H*0.48+H*0.07*Math.sin(x*0.012)+H*0.05*Math.sin(x*0.021));
-      ctx.lineTo(x,h);
-    }
-    ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
-
-    // Mid grass
-    ctx.fillStyle='#5DA832';
-    ctx.beginPath(); ctx.moveTo(0,H);
-    for(let x=0;x<=W;x++){
-      const h=Math.round(H*0.58+H*0.035*Math.sin(x*0.018+1));
-      ctx.lineTo(x,h);
-    }
-    ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
-
-    // Mid grass tufts animated
-    for(let x=0;x<W;x+=12){
-      const baseH=Math.round(H*0.578+H*0.035*Math.sin(x*0.018+1));
-      const sway=Math.sin(fr*0.05+x*0.08)*2.5;
-      ctx.fillStyle='#7DC84A';
-      ctx.fillRect(x+sway,baseH-5,4,5);
-      ctx.fillRect(x+6+sway*0.7,baseH-8,4,8);
-    }
-
-    // Front ground
-    const frontY=Math.round(H*0.78);
-    ctx.fillStyle='#3A7A1E';
-    ctx.fillRect(0,frontY,W,H-frontY);
-
-    // Front tufts
-    for(let x=0;x<W;x+=10){
-      const sway=Math.sin(fr*0.07+x*0.1)*3;
-      ctx.fillStyle='#5DA832';
-      ctx.fillRect(x+sway,frontY-5,6,6);
-      ctx.fillRect(x+4+sway*0.6,frontY-9,4,9);
-      ctx.fillStyle='#2A5A12';
-      ctx.fillRect(x,frontY,8,5);
-    }
-
-    // Dark ground strip
-    ctx.fillStyle='#2A5A12';
-    ctx.fillRect(0,frontY+10,W,H-frontY-10);
-
-    // Fireflies
-    fireflies.forEach(f=>{
-      f.life+=f.spd;
-      f.x+=f.vx; f.y+=f.vy;
-      if(f.x<0)f.x=W; if(f.x>W)f.x=0;
-      if(f.y<H*0.55)f.y=H*0.55; if(f.y>H*0.82)f.y=H*0.82;
-      const glow=0.5+0.5*Math.sin(f.life*Math.PI*2);
-      ctx.globalAlpha=glow*0.8;
-      ctx.fillStyle='#FFFF88';
-      ctx.fillRect(Math.round(f.x),Math.round(f.y),3,3);
+    // Shooting stars
+    for(let i=shoots.length-1;i>=0;i--){
+      const s=shoots[i];s.x+=s.vx;s.y+=s.vy;s.life-=0.025;
+      if(s.life<=0||s.x>W||s.y>H){shoots.splice(i,1);continue;}
+      ctx.globalAlpha=s.life;
+      ctx.strokeStyle='#ffffff';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*6,s.y-s.vy*6);ctx.stroke();
       ctx.globalAlpha=1;
-    });
+    }
 
-    // Floating formulas (darker for day sky)
+    // Floaters
     floaters.forEach((f,i)=>{
-      f.y-=f.speed; f.x+=f.drift+Math.sin(fr*0.007+f.wave)*0.3;
-      if(f.y<-30){f.y=H*0.7+Math.random()*H*0.15;f.x=Math.random()*W;}
-      if(f.x<-80)f.x=W+10; if(f.x>W+80)f.x=-80;
-      ctx.globalAlpha=f.op*(0.7+0.25*Math.sin(fr*0.013+i*0.5));
+      f.y-=f.speed;f.x+=f.drift+Math.sin(fr*0.007+f.wave)*0.3;
+      if(f.y<-30){f.y=H+15;f.x=Math.random()*W;}
+      if(f.x<-80)f.x=W+10;if(f.x>W+80)f.x=-80;
+      ctx.globalAlpha=f.op*(0.65+0.3*Math.sin(fr*0.013+i*0.5));
       ctx.fillStyle=f.col;
       ctx.font=`bold ${f.size}px monospace`;
       ctx.fillText(f.text,f.x,f.y);
       ctx.globalAlpha=1;
     });
+
+    // Animate flag
+    drawFlag(fr);
 
     setTimeout(()=>requestAnimationFrame(loop),38);
   }
